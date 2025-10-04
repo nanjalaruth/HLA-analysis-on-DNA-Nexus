@@ -1,4 +1,4 @@
-# 🧬 Running HLA-LA on DNAnexus — Workshop README
+# Running HLA-LA on DNAnexus — Workshop 
 
 This hands-on guide walks participants through extracting HLA/KIR-region reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy‑paste friendly, with clear checkpoints and troubleshooting.
 
