@@ -19,6 +19,21 @@ flowchart LR
   REF[GRCh38 decoy HLA FASTA] -. required .-> EX
   REF -. required .-> HLA
   BED[HLA KIR Immuno BED] -. required .-> EX
+
+  %% Classes
+  classDef inputNode fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px,color:#0D47A1;
+  classDef processNode fill:#E8F5E9,stroke:#43A047,stroke-width:2px,color:#1B5E20;
+  classDef outputNode fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px,color:#E65100;
+  classDef refNode fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px,color:#4A148C,stroke-dasharray: 5 3;
+
+  class CRAM inputNode;
+  class EX,XCRAM,HLA processNode;
+  class OUT outputNode;
+  class REF,BED refNode;
+
+  %% Optional link styling
+  linkStyle default stroke:#546E7A,stroke-width:2px;
+  linkStyle 4,5 stroke:#8E24AA,stroke-dasharray: 5 3;
 ```
 
 ---
@@ -211,6 +226,16 @@ dx run --priority high \
   * HLA-LA result directories/files (per sample) containing HLA genotype calls and logs
 
 ---
+
+## 🎨 Color Palette (for slides & docs)
+
+* **Blue (inputs):** `#E3F2FD` fill / `#1E88E5` stroke / text `#0D47A1`
+* **Green (processing):** `#E8F5E9` fill / `#43A047` stroke / text `#1B5E20`
+* **Orange (outputs):** `#FFF3E0` fill / `#FB8C00` stroke / text `#E65100`
+* **Purple (references):** `#F3E5F5` fill / `#8E24AA` stroke / text `#4A148C`
+* **Neutral links:** `#546E7A`
+
+> These are WCAG-friendly pairings with good contrast on white backgrounds.
 
 ## 🧪 Verification & Useful Commands
 
