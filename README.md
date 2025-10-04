@@ -87,9 +87,12 @@ export REF="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/GRCh38_full_analysis_set_plus_
 dx mkdir -p "$OUTFOLDER"
 
 # (3) Download dxCompiler (v2.14.0)
+#Repository is private but this is the source
 wget -q \
   https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompiler-2.14.0.jar \
   -O dxCompiler-2.14.0.jar
+
+Download directly from materials shared
 ```
 
 ---
