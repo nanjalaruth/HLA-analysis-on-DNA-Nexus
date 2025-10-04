@@ -11,7 +11,7 @@ This hands-on guide walks participants through extracting HLA reads from CRAMs o
 
 ---
 
-### 🧬 HLA (Human Leukocyte Antigen)
+###  HLA (Human Leukocyte Antigen)
 
 The **HLA system** is a group of immune genes on chromosome 6 that help the body recognize “self” vs. “non-self.”
 
@@ -22,7 +22,7 @@ The **HLA system** is a group of immune genes on chromosome 6 that help the body
 
 ---
 
-### ☁️ DNAnexus
+###  DNAnexus
 
 **DNAnexus** is a secure, cloud platform for large-scale genomics.
 It lets you:
@@ -34,7 +34,7 @@ It lets you:
 
 ---
 
-## Workflow at a Glance (Intro Visual)
+## Workflow at a Glance
 
 ```mermaid
 flowchart LR
@@ -62,7 +62,7 @@ flowchart LR
 
 ---
 
-## 🧩 Prerequisites
+## Prerequisites
 
 * DNAnexus project (example: `Genetics-Workshop-Mexico-2025`)
 * DNAnexus **dx-toolkit** installed and logged in (`dx login`)
