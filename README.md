@@ -78,20 +78,24 @@ flowchart LR
 
 ```bash
 # (1) Set your project and paths
-dx cd 7_HLA_analysis_on_DNA_Nexus
 export PROJECT="Genetics-Workshop-Mexico-2025"
-export OUTFOLDER="Outputs"
-export REF="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 # (2) Create output folder
-dx mkdir -p "$OUTFOLDER"
+dx mkdir -p "Outputs"
 
 # (3) Download dxCompiler (v2.14.0)
 wget -q \
   https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompiler-2.14.0.jar \
   -O dxCompiler-2.14.0.jar
-```
 
+# (4) Download refererence
+GRCh38_full_analysis_set_plus_decoy_hla.fa
+
+# (5) Download test data
+wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/MXL/NA19648/alignment/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram
+
+wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/MXL/NA19648/alignment/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram.crai
+```
 ---
 
 ## Part 1 — Extract HLA Reads
@@ -109,16 +113,18 @@ dx upload docker-samtools-1.3.tar.gz
 
 ```bash
 #Repository is private but this is the source
-wget -q \
-  https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/extractReads.wdl \
-  -O extractReads.wdl
-#Download directly from materials shared
+Download `extractReads.wdl` file to your computer & upload to JupyterLab 
 
 # Edit the WDL line with full path to the samtools:
 docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-samtools-1.3.tar.gz"
 ```
 
 ### 3. Compile to DNAnexus applet
+#### Install java
+
+```bash
+conda install -y -c conda-forge openjdk=11
+```
 
 ```bash
 java -jar dxCompiler-2.14.0.jar compile extractReads.wdl -f
@@ -132,7 +138,6 @@ wget -q \
   -O HLA_and_KIR_and_Immuno.bed
 
 dx upload HLA_and_KIR_and_Immuno.bed
-export BED="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/HLA_and_KIR_and_Immuno.bed"
 ```
 
 ### 5. Run `extractReads`
@@ -140,31 +145,22 @@ export BED="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/HLA_and_KIR_and_Immuno.bed"
 **Single sample example:**
 
 ```bash
-export SAMPLE="$PROJECT:/Data/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam.cram"
-
-dx run /extractReads \
-  -ireference="$REF" \
-  -itargetRegions="$BED" \
-  -imapped_read="$SAMPLE" \
-  --folder="$PROJECT:/$OUTFOLDER"
+dx run /extractReads -ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa" -itargetRegions="Genetics-Workshop-Mexico-2025:/HLA_and_KIR_and_Immuno.bed" -imapped_read="Genetics-Workshop-Mexico-2025:/Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram" --folder="Genetics-Workshop-Mexico-2025:/Outputs"
 ```
 
 **Multiple samples (loop):**
 
 ```bash
-SAMPLES=( \
-  "$PROJECT:/Data/*.cram" \
-)
-
-for s in "${SAMPLES[@]}"; do
-  dx run --priority low /extractReads \
-    -ireference="$REF" \
-    -itargetRegions="$BED" \
-    -imapped_read="$s" \
-    --folder="$PROJECT:/$OUTFOLDER" -y
-done
+#Full command for multiple samples
+dx run \
+--priority low /extractReads \
+-ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa" \
+-itargetRegions="Genetics-Workshop-Mexico-2025:/HLA_and_KIR_and_Immuno.bed" \ # downloaded from Alex Github page
+-imapped_read="Genetics-Workshop-Mexico-2025:/Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram" \
+#-imapped_read="/Bulk/Whole genome sequences/Whole genome CRAM files/10/1033931_23193_0_0.cram" \
+#-imapped_read="/Bulk/Whole genome sequences/Whole genome CRAM files/10/1073611_23193_0_0.cram" \
+--folder="Genetics-Workshop-Mexico-2025:/Outputs"
 ```
-
 ---
 
 ## Part 2 — Run HLA-LA
@@ -181,13 +177,16 @@ dx upload docker-hla-la-1.0.8-fast-cram.tar.gz
 ### 2. Download and edit `hla-la.wdl`
 
 ```bash
-wget -q \
-  https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/hla-la.wdl \
-  -O hla-la.wdl
+Download `hla-la.wdl` file to your computer & upload to JupyterLab
 
 # Edit docker line with full path:
 # docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-hla-la-1.0.8-fast-cram.tar.gz"
-```
+
+#modified line: sampleIDs=$(echo $samplePaths | perl -MFile::Basename -ne '@p = split(/,/, $_); print join(",", map {my $f = (fileparse($_, ".cram"))[0]; $f =~ s/.dragen_extracted//; $f =~ s/_coverage_extracted//; $f} @p);')
+
+#add the base name based on your data
+e.g. file_prefix="${file_prefix%_coverage_extracted}
+```                
 
 ### 3. Compile to applet
 
@@ -198,30 +197,26 @@ java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
 ### 4. Run HLA-LA (single sample)
 
 ```bash
-export XCRAM="$PROJECT:/$OUTFOLDER/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam_extracted.cram"
-export XCRAI="$XCRAM.crai"
-
 dx run --priority high \
-  --cost-limit 3 /hla_la \
-  -ireference="$REF" \
-  -iapplyT1K="false" \
-  -iapplyPING="false" \
-  -imapped_read="$XCRAM" \
-  -imapped_read_index="$XCRAI" \
-  --folder="$PROJECT:/$OUTFOLDER"
+--cost-limit 3 /hla_la \
+-ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa" \
+-iapplyT1K="false" \
+-iapplyPING="false" \
+-imapped_read="-imapped_read="Genetics-Workshop-Mexico-2025:/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram" \
+-imapped_read_index="Genetics-Workshop-Mexico-2025:/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram.crai" \
+--folder="Genetics-Workshop-Mexico-2025:/Outputs"
 ```
 
 ---
 
-## ✅ Outputs
+## Outputs
 
 * Extracted CRAMs and CRAIs
 * HLA typing results from HLA-LA per sample
 
 ---
 
-## 🧪 Useful Commands
-
+## Useful Commands
 ```bash
 # List project contents
 dx ls "$PROJECT:/$OUTFOLDER"
@@ -235,7 +230,7 @@ dx describe job-XXXX --verbose
 
 ---
 
-## 🩺 Troubleshooting
+## Troubleshooting
 
 * **File not found:** check full DNAnexus path.
 * **Applet name mismatch:** run `dx ls` and adjust names.
@@ -245,7 +240,7 @@ dx describe job-XXXX --verbose
 
 ---
 
-## 🔁 Reproducibility
+## Reproducibility
 
 * Save all your commands to a script.
 * Record job metadata: `dx describe -j job-XXXX > record.json`.
@@ -260,71 +255,3 @@ dx describe job-XXXX --verbose
 * [DNAnexus Documentation](https://documentation.dnanexus.com)
 
 ---
-
-### 📎 Appendix: Minimal End-to-End (Copy/Paste)
-
-```bash
-# Setup
-export PROJECT="Genetics-Workshop-Mexico-2025"
-export OUTFOLDER="Outputs-trial"
-export REF="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/GRCh38_full_analysis_set_plus_decoy_hla.fa"
-
-dx mkdir -p "$OUTFOLDER"
-
-wget -q \
-  https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompiler-2.14.0.jar \
-  -O dxCompiler-2.14.0.jar
-
-# Part 1: extractReads
-wget -O docker-samtools-1.3.tar.gz \
-  'https://www.dropbox.com/scl/fi/2p10uuv5ovyz5ku5k72h0/docker-samtools-1.3.tar.gz?rlkey=q4qul96p8t8bq5i72e4lc6v9s&dl=1'
-
-dx upload docker-samtools-1.3.tar.gz
-
-wget -q \
-  https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/extractReads.wdl \
-  -O extractReads.wdl
-
-# (Edit docker path in WDL)
-java -jar dxCompiler-2.14.0.jar compile extractReads.wdl -f
-
-wget -q \
-  https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/HLA_and_KIR_and_Immuno.bed \
-  -O HLA_and_KIR_and_Immuno.bed
-
-dx upload HLA_and_KIR_and_Immuno.bed
-export BED="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/HLA_and_KIR_and_Immuno.bed"
-
-export SAMPLE="$PROJECT:/Data/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam.cram"
-
-dx run /extractReads \
-  -ireference="$REF" \
-  -itargetRegions="$BED" \
-  -imapped_read="$SAMPLE" \
-  --folder="$PROJECT:/$OUTFOLDER"
-
-# Part 2: HLA-LA
-wget -O docker-hla-la-1.0.8-fast-cram.tar.gz \
-  'https://www.dropbox.com/scl/fi/yeisml3kez9y13wj6agn1/docker-hla-la-1.0.8-fast-cram.tar.gz?rlkey=lk97bvzoghnuqsavf8vh6ncg4&dl=1'
-
-dx upload docker-hla-la-1.0.8-fast-cram.tar.gz
-
-wget -q \
-  https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/hla-la.wdl \
-  -O hla-la.wdl
-
-# (Edit docker path in WDL)
-java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
-
-export XCRAM="$PROJECT:/$OUTFOLDER/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam_extracted.cram"
-export XCRAI="$XCRAM.crai"
-
-dx run --priority high \
-  --cost-limit 3 /hla_la \
-  -ireference="$REF" \
-  -iapplyT1K="false" \
-  -iapplyPING="false" \
-  -imapped_read="$XCRAM" \
-  -imapped_read_index="$XCRAI" \
-  --folder="$PROJECT:/$OUTFOLDER"
-```
