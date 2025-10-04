@@ -1,10 +1,10 @@
 # HLA-LA on DNAnexus 
 
-This hands-on guide walks participants through extracting HLA reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy-paste friendly, with clear checkpoints and troubleshooting.
+This hands-on guide walks participants through extracting HLA reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. 
 
-> **Audience:** Researchers with basic command-line skills and access to a DNAnexus project.
+> **Audience:** Mexican researchers.
 >
-> **You’ll do:**
+> **You will:**
 > (1) compile two WDLs to DNAnexus applets
 > (2) run read extraction
 > (3) run HLA-LA on the extracted reads.
