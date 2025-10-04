@@ -1,10 +1,33 @@
-# Running HLA-LA on DNAnexus — Workshop 
+# 🧬 Running HLA-LA on DNAnexus — Workshop README
 
-This hands-on guide walks participants through extracting HLA/KIR-region reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy‑paste friendly, with clear checkpoints and troubleshooting.
+This hands-on guide walks participants through extracting HLA/KIR-region reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy-paste friendly, with clear checkpoints and troubleshooting.
 
 > **Audience:** Researchers with basic command-line skills and access to a DNAnexus project.
 >
 > **You’ll do:** (1) compile two WDLs to DNAnexus applets, (2) run read extraction, (3) run HLA-LA on the extracted reads.
+
+---
+
+### 🧬 HLA (Human Leukocyte Antigen)
+
+The **HLA system** is a group of immune genes on chromosome 6 that help the body recognize “self” vs. “non-self.”
+
+* **Class I (A, B, C):** show peptides from inside cells to CD8 T cells.
+* **Class II (DR, DQ, DP):** show external peptides to CD4 T cells.
+* Highly variable — key for **transplant matching**, **disease association**, and **drug response** studies.
+  In this workflow, we use **HLA-LA** to identify each sample’s HLA alleles from sequencing data.
+
+---
+
+### ☁️ DNAnexus
+
+**DNAnexus** is a secure, cloud platform for large-scale genomics.
+It lets you:
+
+* Store and organize data in *projects*
+* Run reproducible workflows (e.g. WDLs) as *applets*
+* Scale analyses across samples easily
+  We’ll use it here to run **extractReads** and **HLA-LA** in the cloud.
 
 ---
 
@@ -227,16 +250,6 @@ dx run --priority high \
 
 ---
 
-## 🎨 Color Palette (for slides & docs)
-
-* **Blue (inputs):** `#E3F2FD` fill / `#1E88E5` stroke / text `#0D47A1`
-* **Green (processing):** `#E8F5E9` fill / `#43A047` stroke / text `#1B5E20`
-* **Orange (outputs):** `#FFF3E0` fill / `#FB8C00` stroke / text `#E65100`
-* **Purple (references):** `#F3E5F5` fill / `#8E24AA` stroke / text `#4A148C`
-* **Neutral links:** `#546E7A`
-
-> These are WCAG-friendly pairings with good contrast on white backgrounds.
-
 ## 🧪 Verification & Useful Commands
 
 ```bash
@@ -315,5 +328,5 @@ java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
 
 export XCRAM="$PROJECT:/$OUTFOLDER/MCPS_MCPSRGN000055_MEXB000360.oqfe_extracted.cram"
 export XCRAI="$XCRAM.crai"
-dx run --priority high --cost-limit 3 /hla_la -ireference="$REF" -iapplyT1K="false" -iapplyPING="false" -imapped_read="$XCRAM" -imapped_read_index="$XCRAI" --folder="$PROJECT:/$OUTFOLDER"
+dx run --priority high --cost-limit 3 /hla_la -ireference="$REF" -iapplyT1K="false" -iapplyPING="false" -imapped_read="$XCRAM" -imapped_read_index="$XCRAI" --folder="$PR
 ```
