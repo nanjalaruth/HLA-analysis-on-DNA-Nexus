@@ -1,6 +1,6 @@
-# HLA-analysis-on-DNA-Nexus Workshop 
+# 🧬 Running HLA-LA on DNAnexus — Workshop README
 
-This hands-on guide walks participants through extracting HLA reads from CRAMs/BAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. 
+This hands-on guide walks participants through extracting HLA/KIR-region reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy‑paste friendly, with clear checkpoints and troubleshooting.
 
 > **Audience:** Researchers with basic command-line skills and access to a DNAnexus project.
 >
@@ -12,15 +12,13 @@ This hands-on guide walks participants through extracting HLA reads from CRAMs/B
 
 ```mermaid
 flowchart LR
-    A[Input CRAM(s)] -->|extract HLA/KIR regions| B[extractReads Applet (Samtools)]
-    subgraph DNAnexus Project
-    B --> C[Extracted CRAM + CRAI]
-    C -->|per-sample| D[HLA-LA Applet]
-    D --> E[HLA Genotypes & Reports]
-    end
-    F[(Reference FASTA<br/>GRCh38+decoy+HLA)] -. required .-> B
-    F -. required .-> D
-    G[(Target BED:<br/>HLA_and_KIR_and_Immuno.bed)] -. required .-> B
+  CRAM[Input CRAM files] --> EX[extractReads applet]
+  EX --> XCRAM[Extracted CRAM and CRAI]
+  XCRAM --> HLA[HLA-LA applet]
+  HLA --> OUT[HLA genotypes and reports]
+  REF[GRCh38 decoy HLA FASTA] -. required .-> EX
+  REF -. required .-> HLA
+  BED[HLA KIR Immuno BED] -. required .-> EX
 ```
 
 ---
