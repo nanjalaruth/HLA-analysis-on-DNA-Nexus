@@ -1,4 +1,4 @@
-# 🧬 Running HLA-LA on DNAnexus — Workshop README
+# Running HLA-LA on DNAnexus 
 
 This hands-on guide walks participants through extracting HLA/KIR-region reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy-paste friendly, with clear checkpoints and troubleshooting.
 
@@ -73,7 +73,7 @@ flowchart LR
 
 ---
 
-## ⚙️ Quick Start (Five-Minute Setup)
+## Quick Start 
 
 ```bash
 # (1) Set your project/paths once, then copy-paste commands below as-is
@@ -90,7 +90,7 @@ wget -q https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompil
 
 ---
 
-## Part 1 — Extract HLA/KIR Reads
+## Part 1 — Extract HLA Reads
 
 ### 1. Upload the Samtools container
 
