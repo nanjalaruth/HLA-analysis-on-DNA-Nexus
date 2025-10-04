@@ -87,17 +87,14 @@ export REF="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/GRCh38_full_analysis_set_plus_
 dx mkdir -p "$OUTFOLDER"
 
 # (3) Download dxCompiler (v2.14.0)
-#Repository is private but this is the source
 wget -q \
   https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompiler-2.14.0.jar \
   -O dxCompiler-2.14.0.jar
-
-Download directly from materials shared
 ```
 
 ---
 
-## Part 1 — Extract HLA/KIR Reads
+## Part 1 — Extract HLA Reads
 
 ### 1. Upload the Samtools container
 
@@ -111,9 +108,11 @@ dx upload docker-samtools-1.3.tar.gz
 ### 2. Download and edit `extractReads.wdl`
 
 ```bash
+#Repository is private but this is the source
 wget -q \
   https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/extractReads.wdl \
   -O extractReads.wdl
+#Download directly from materials shared
 
 # Edit the WDL line with full path to the samtools:
 docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-samtools-1.3.tar.gz"
