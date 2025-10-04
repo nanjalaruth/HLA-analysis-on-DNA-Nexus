@@ -322,7 +322,3 @@ dx run --priority high \
   -imapped_read_index="$XCRAI" \
   --folder="$PROJECT:/$OUTFOLDER"
 ```
-
-* [DiltheyLab/MarieAlexKIR GitHub](https://github.com/DiltheyLab/MarieAlexKIR)
-* [HLA-LA (Nature Communications, 2019)](https://www.nature.com/articles/s41467-019-11167-x)
-* [DNAnexus Documentation](https://documentation.dnanexus.com)
