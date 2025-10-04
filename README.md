@@ -1,10 +1,13 @@
 # Running HLA-LA on DNAnexus 
 
-This hands-on guide walks participants through extracting HLA/KIR-region reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy-paste friendly, with clear checkpoints and troubleshooting.
+This hands-on guide walks participants through extracting HLA reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. It’s designed for a workshop setting: copy-paste friendly, with clear checkpoints and troubleshooting.
 
 > **Audience:** Researchers with basic command-line skills and access to a DNAnexus project.
 >
-> **You’ll do:** (1) compile two WDLs to DNAnexus applets, (2) run read extraction, (3) run HLA-LA on the extracted reads.
+> **You’ll do:**
+> (1) compile two WDLs to DNAnexus applets
+> (2) run read extraction
+> (3) run HLA-LA on the extracted reads.
 
 ---
 
@@ -12,8 +15,8 @@ This hands-on guide walks participants through extracting HLA/KIR-region reads f
 
 The **HLA system** is a group of immune genes on chromosome 6 that help the body recognize “self” vs. “non-self.”
 
-* **Class I (A, B, C):** show peptides from inside cells to CD8 T cells.
-* **Class II (DR, DQ, DP):** show external peptides to CD4 T cells.
+* **Class I (A, B, C):** Help with antigen presentation to CD8 T cells.
+* **Class II (DR, DQ, DP):** Help with antigen presentation to CD4 T cells.
 * Highly variable — key for **transplant matching**, **disease association**, and **drug response** studies.
   In this workflow, we use **HLA-LA** to identify each sample’s HLA alleles from sequencing data.
 
@@ -35,8 +38,8 @@ It lets you:
 
 ```mermaid
 flowchart LR
-  CRAM[Input CRAM files] --> EX[extractReads applet]
-  EX --> XCRAM[Extracted CRAM and CRAI]
+  CRAM[Input CRAM/BAM files] --> EX[extractReads applet]
+  EX --> XCRAM[Extracted CRAM/BAM and CRAI/BAI]
   XCRAM --> HLA[HLA-LA applet]
   HLA --> OUT[HLA genotypes and reports]
   REF[GRCh38 decoy HLA FASTA] -. required .-> EX
@@ -61,7 +64,7 @@ flowchart LR
 
 ## 🧩 Prerequisites
 
-* DNAnexus project (example: `2023_012_Yang_Luo`)
+* DNAnexus project (example: `Genetics-Workshop-Mexico-2025`)
 * DNAnexus **dx-toolkit** installed and logged in (`dx login`)
 * Java 8+ for `dxCompiler`
 * Reference FASTA: `GRCh38_full_analysis_set_plus_decoy_hla.fa` in your project
@@ -71,13 +74,14 @@ flowchart LR
 
 ---
 
-## ⚙️ Quick Start (Five-Minute Setup)
+## Quick Start 
 
 ```bash
 # (1) Set your project and paths
-export PROJECT="2023_012_Yang_Luo"
-export OUTFOLDER="Outputs-trial"
-export REF="$PROJECT:/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+dx cd 7_HLA_analysis_on_DNA_Nexus
+export PROJECT="Genetics-Workshop-Mexico-2025"
+export OUTFOLDER="Outputs"
+export REF="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 # (2) Create output folder
 dx mkdir -p "$OUTFOLDER"
@@ -108,8 +112,8 @@ wget -q \
   https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/extractReads.wdl \
   -O extractReads.wdl
 
-# Edit the WDL line:
-# docker: "dx://2023_012_Yang_Luo:/docker-samtools-1.3.tar.gz"
+# Edit the WDL line with full path to the samtools:
+docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-samtools-1.3.tar.gz"
 ```
 
 ### 3. Compile to DNAnexus applet
@@ -126,7 +130,7 @@ wget -q \
   -O HLA_and_KIR_and_Immuno.bed
 
 dx upload HLA_and_KIR_and_Immuno.bed
-export BED="$PROJECT:/HLA_and_KIR_and_Immuno.bed"
+export BED="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/HLA_and_KIR_and_Immuno.bed"
 ```
 
 ### 5. Run `extractReads`
@@ -134,7 +138,7 @@ export BED="$PROJECT:/HLA_and_KIR_and_Immuno.bed"
 **Single sample example:**
 
 ```bash
-export SAMPLE="$PROJECT:/Data/WGS/data/CRAM/MCPS_MCPSRGN000055_MEXB000360.oqfe.cram"
+export SAMPLE="$PROJECT:/Data/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam.cram"
 
 dx run /extractReads \
   -ireference="$REF" \
@@ -147,7 +151,7 @@ dx run /extractReads \
 
 ```bash
 SAMPLES=( \
-  "$PROJECT:/Data/WGS/data/CRAM/MCPS_MCPSRGN000055_MEXB000360.oqfe.cram" \
+  "$PROJECT:/Data/*.cram" \
 )
 
 for s in "${SAMPLES[@]}"; do
@@ -179,8 +183,8 @@ wget -q \
   https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/hla-la.wdl \
   -O hla-la.wdl
 
-# Edit docker line:
-# docker: "dx://2023_012_Yang_Luo:/docker-hla-la-1.0.8-fast-cram.tar.gz"
+# Edit docker line with full path:
+# docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-hla-la-1.0.8-fast-cram.tar.gz"
 ```
 
 ### 3. Compile to applet
@@ -192,7 +196,7 @@ java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
 ### 4. Run HLA-LA (single sample)
 
 ```bash
-export XCRAM="$PROJECT:/$OUTFOLDER/MCPS_MCPSRGN000055_MEXB000360.oqfe_extracted.cram"
+export XCRAM="$PROJECT:/$OUTFOLDER/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam_extracted.cram"
 export XCRAI="$XCRAM.crai"
 
 dx run --priority high \
@@ -259,9 +263,9 @@ dx describe job-XXXX --verbose
 
 ```bash
 # Setup
-export PROJECT="2023_012_Yang_Luo"
+export PROJECT="Genetics-Workshop-Mexico-2025"
 export OUTFOLDER="Outputs-trial"
-export REF="$PROJECT:/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+export REF="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 dx mkdir -p "$OUTFOLDER"
 
@@ -287,9 +291,9 @@ wget -q \
   -O HLA_and_KIR_and_Immuno.bed
 
 dx upload HLA_and_KIR_and_Immuno.bed
-export BED="$PROJECT:/HLA_and_KIR_and_Immuno.bed"
+export BED="$PROJECT:/7_HLA_analysis_on_DNA_Nexus/HLA_and_KIR_and_Immuno.bed"
 
-export SAMPLE="$PROJECT:/Data/WGS/data/CRAM/MCPS_MCPSRGN000055_MEXB000360.oqfe.cram"
+export SAMPLE="$PROJECT:/Data/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam.cram"
 
 dx run /extractReads \
   -ireference="$REF" \
@@ -310,7 +314,7 @@ wget -q \
 # (Edit docker path in WDL)
 java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
 
-export XCRAM="$PROJECT:/$OUTFOLDER/MCPS_MCPSRGN000055_MEXB000360.oqfe_extracted.cram"
+export XCRAM="$PROJECT:/$OUTFOLDER/NA11995.mapped.ILLUMINA.bwa.CEU.low_coverage.20120522.bam_extracted.cram"
 export XCRAI="$XCRAM.crai"
 
 dx run --priority high \
