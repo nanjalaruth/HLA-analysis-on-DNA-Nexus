@@ -231,6 +231,7 @@ dx describe job-XXXX --verbose
 * **dxCompiler memory issues:** increase heap (`JAVA_TOOL_OPTIONS=-Xmx4g`).
 * **Missing index:** ensure `.crai` is uploaded.
 * **Odd sample IDs:** adjust filename trimming in the WDL.
+* **file is open:** delete & redownload the hla-la docker container
 
 ---
 
