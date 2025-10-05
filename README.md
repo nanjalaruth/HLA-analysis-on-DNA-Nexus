@@ -218,7 +218,7 @@ dx run --priority high   --cost-limit 3 /hla_la   -ireference="Genetics-Workshop
 
 ---
 ## Next steps
-Convert in to a HLA PED file using the script `combineHLA_LA.sh` on the home page
+Convert in to a HLA PED file using the script `combineHLA_LA.sh` on the home page.
 
 ## Useful Commands
 ```bash
