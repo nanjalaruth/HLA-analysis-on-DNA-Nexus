@@ -95,6 +95,9 @@ GRCh38_full_analysis_set_plus_decoy_hla.fa
 wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/MXL/NA19648/alignment/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram
 
 wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/MXL/NA19648/alignment/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram.crai
+
+# (6) Download wdl file
+Download `extractReads.wdl`and `hla-la.wdl` files from the workshop DNA Nexus page
 ```
 ---
 
