@@ -178,15 +178,19 @@ dx upload docker-hla-la-1.0.8-fast-cram.tar.gz
 
 ```bash
 Download `hla-la.wdl` file to your computer & upload to JupyterLab
+```
 
+For the test data, skip and move to compiling.
+For your own data, do the following:
+```
 # Edit docker line with full path:
 docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-hla-la-1.0.8-fast-cram.tar.gz"
 
-#modify line:
-sampleIDs=$(echo $samplePaths | perl -MFile::Basename -ne '@p = split(/,/, $_); print join(",", map {my $f = (fileparse($_, ".cram"))[0]; $f =~ s/.dragen_extracted//; $f =~ s/_coverage_extracted//; $f} @p);')
+#modify line to only remain with base name for your sample ID:
+sampleIDs=$(echo $samplePaths | perl -MFile::Basename -ne '@p = split(/,/, $_); print join(",", map {my $f = (fileparse($_, ".cram"))[0]; $f =~ s/.dragen_extracted//; $f =~ s/.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted//; $f} @p);')
 
 #add the base name based on your data
-e.g. file_prefix="${file_prefix%_coverage_extracted}
+file_prefix="${file_prefix%.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted}"
 ```                
 
 ### 3. Compile to applet
