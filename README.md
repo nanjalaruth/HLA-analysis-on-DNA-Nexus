@@ -66,7 +66,8 @@ By the end of this section, your DNAnexus environment will be ready for the hand
 export PROJECT="Genetics-Workshop-Mexico-2025"
 
 # Create output folder in project
-dx mkdir -p "Outputs"
+dx mkdir -p "Outputs/Nanjala"
+#replace `Nanjala` with your name
 ```
 
 ---
