@@ -1,15 +1,128 @@
-# HLA-LA on DNAnexus 
+# HLA-LA on DNAnexus
 
-This hands-on guide walks participants through extracting HLA reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**. 
+This hands-on guide walks participants through extracting HLA reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**.
 
-> **Audience:** Mexican researchers.
->
-> **You will:**
-> (1) compile two WDLs to DNAnexus applets
-> (2) run read extraction
-> (3) run HLA-LA on the extracted reads.
+> **Audience:** Mexican researchers  
+> **You will:**  
+> (1) compile two WDLs to DNAnexus applets  
+> (2) run read extraction  
+> (3) run HLA-LA on the extracted reads  
 
 ---
+
+## Table of Contents
+
+<details open>
+<summary>Click to expand/collapse</summary>
+
+- [Part A — Pre-Workshop Setup (on JupyterLab)](#-part-a--pre-workshop-setup-on-jupyterlab)
+  - [1. Requirements](#1-requirements)
+  - [2. Set Up Environment](#2-set-up-environment)
+  - [3. Install Dependencies](#3-install-dependencies)
+  - [4. Verify Required Files in DNAnexus](#4-verify-required-files-in-dnanexus)
+  - [5. Download dxCompiler](#5-download-dxcompiler)
+  - [✅ Pre-Workshop Checklist](#-pre-workshop-checklist)
+- [Background Information](#-background-information)
+  - [HLA (Human Leukocyte Antigen)](#hla-human-leukocyte-antigen)
+  - [DNAnexus Overview](#dnanexus-overview)
+  - [Workflow at a Glance](#workflow-at-a-glance)
+- [Part B — Workshop: Running HLA-LA on DNAnexus](#-part-b--workshop-running-hla-la-on-dnanexus)
+  - [Workflow Overview](#workflow-overview)
+  - [Part 1 — Extract HLA Reads](#part-1--extract-hla-reads)
+  - [Part 2 — Run HLA-LA](#part-2--run-hla-la)
+  - [Outputs](#outputs)
+  - [Next Steps](#next-steps)
+  - [Useful Commands](#useful-commands)
+  - [Troubleshooting](#troubleshooting)
+  - [Reproducibility](#reproducibility)
+  - [📚 References](#-references)
+
+</details>
+
+---
+
+## Part A — Pre-Workshop Setup (on JupyterLab)
+
+All setup and verification can be done directly in **JupyterLab** before the session.  
+By the end of this section, your DNAnexus environment will be ready for the hands-on steps.
+
+---
+
+### 1. Requirements
+
+* DNAnexus account and project (example: `Genetics-Workshop-Mexico-2025`)
+* DNAnexus **dx-toolkit** installed and logged in (`dx login`)
+* Java 8+ for `dxCompiler`
+* Basic shell familiarity
+
+> **Tip:** Keep your DNAnexus web project open to monitor jobs.
+
+---
+
+### 2. Set Up Environment
+
+```bash
+# Set your DNAnexus project
+export PROJECT="Genetics-Workshop-Mexico-2025"
+
+# Create output folder in project
+dx mkdir -p "Outputs"
+```
+
+---
+
+### 3. Install tools & Dependencies
+Install OpenJDK (Java 11) for dxCompiler
+```
+conda install -y -c conda-forge openjdk=11
+
+```
+
+Download dxCompiler
+```
+wget -q \
+  https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompiler-2.14.0.jar \
+  -O dxCompiler-2.14.0.jar
+
+```
+---
+
+### 4. Verify Required Files in DNAnexus
+
+All necessary data, workflows, and containers have already been placed in the DNAnexus project.
+
+Please ensure you can see the following in your project:
+
+Data folder
+- Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram
+- Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram.crai
+
+Main folder
+- docker-samtools-1.3.tar.gz
+- docker-hla-la-1.0.8-fast-cram.tar.gz
+- extractReads.wdl
+- hla-la.wdl
+
+Reference files
+- GRCh38_full_analysis_set_plus_decoy_hla.fa
+- HLA_and_KIR_and_Immuno.bed
+
+If any file is missing, notify the workshop facilitator before proceeding.
+
+---
+### ✅ Pre-Workshop Checklist
+
+Before the workshop, confirm you have:
+
+- [x] Access to DNAnexus and logged in with `dx login`  
+- [x] Java installed and `dxCompiler` downloaded  
+- [x] Data files visible in `/Data`  
+- [x] WDLs visible in `7_HLA_analysis_on_DNA_Nexus`  
+- [x] Docker containers and reference files present in project
+
+---
+
+## Background Information
 
 ###  HLA (Human Leukocyte Antigen)
 
@@ -34,7 +147,7 @@ It lets you:
 
 ---
 
-## Workflow at a Glance
+### Workflow at a Glance
 
 ```mermaid
 flowchart LR
@@ -62,88 +175,26 @@ flowchart LR
 
 ---
 
-## Prerequisites
+## 🧪 Part B — Workshop: Running HLA-LA on DNAnexus
 
-* DNAnexus project (example: `Genetics-Workshop-Mexico-2025`)
-* DNAnexus **dx-toolkit** installed and logged in (`dx login`)
-* Java 8+ for `dxCompiler`
-* Reference FASTA: `GRCh38_full_analysis_set_plus_decoy_hla.fa` in your project
-* Basic shell familiarity
-
-> **Tip:** Keep your DNAnexus web project open to monitor jobs.
+In this section, you’ll compile the WDLs into DNAnexus applets and run the two main steps:  
+**(1) extract HLA reads** and **(2) perform HLA typing.**
 
 ---
 
-## Quick Start 
+### Part 1 — Extract HLA Reads
+
+#### 1. Compile `extractReads.wdl`
 
 ```bash
-# (1) Set your project and paths
-export PROJECT="Genetics-Workshop-Mexico-2025"
+# Confirm docker line in WDL points to:
+docker: "dx://Genetics-Workshop-Mexico-2025:/docker-samtools-1.3.tar.gz"
 
-# (2) Create output folder
-dx mkdir -p "Outputs"
-
-# (3) Download dxCompiler (v2.14.0)
-wget -q \
-  https://github.com/dnanexus/dxCompiler/releases/download/2.14.0/dxCompiler-2.14.0.jar \
-  -O dxCompiler-2.14.0.jar
-
-# (4) Download refererence
-GRCh38_full_analysis_set_plus_decoy_hla.fa
-
-# (5) Download test data
-wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/MXL/NA19648/alignment/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram
-
-wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/MXL/NA19648/alignment/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram.crai
-
-# (6) Download wdl file
-Download `extractReads.wdl`and `hla-la.wdl` files from the workshop DNA Nexus page
-```
----
-
-## Part 1 — Extract HLA Reads
-
-### 1. Upload the Samtools container
-
-```bash
-wget -O docker-samtools-1.3.tar.gz \
-  'https://www.dropbox.com/scl/fi/2p10uuv5ovyz5ku5k72h0/docker-samtools-1.3.tar.gz?rlkey=q4qul96p8t8bq5i72e4lc6v9s&dl=1'
-
-dx upload docker-samtools-1.3.tar.gz
-```
-
-### 2. Download and edit `extractReads.wdl`
-
-```bash
-#Repository is private but this is the source
-Download `extractReads.wdl` file to your computer & upload to JupyterLab 
-
-# Edit the WDL line with full path to the samtools:
-docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-samtools-1.3.tar.gz"
-```
-
-### 3. Compile to DNAnexus applet
-#### Install java
-
-```bash
-conda install -y -c conda-forge openjdk=11
-```
-
-```bash
+# Compile to DNAnexus applet
 java -jar dxCompiler-2.14.0.jar compile extractReads.wdl -f
 ```
 
-### 4. Upload BED and create folder
-
-```bash
-wget -q \
-  https://raw.githubusercontent.com/DiltheyLab/MarieAlexKIR/main/HLA_and_KIR_and_Immuno.bed \
-  -O HLA_and_KIR_and_Immuno.bed
-
-dx upload HLA_and_KIR_and_Immuno.bed
-```
-
-### 5. Run `extractReads`
+#### 2. Run `extractReads`
 
 **Single sample example:**
 
@@ -166,24 +217,19 @@ dx run \
 ```
 ---
 
-## Part 2 — Run HLA-LA
+### Part 2 — Run HLA-LA
 
-### 1. Upload HLA-LA container
-
-```bash
-wget -O docker-hla-la-1.0.8-fast-cram.tar.gz \
-  'https://www.dropbox.com/scl/fi/yeisml3kez9y13wj6agn1/docker-hla-la-1.0.8-fast-cram.tar.gz?rlkey=lk97bvzoghnuqsavf8vh6ncg4&dl=1'
-
-dx upload docker-hla-la-1.0.8-fast-cram.tar.gz
-```
-
-### 2. Download and edit `hla-la.wdl`
+#### 1. Compile hla-la.wdl
 
 ```bash
-Download `hla-la.wdl` file to your computer & upload to JupyterLab
+# Confirm docker line in WDL points to:
+docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-hla-la-1.0.8-fast-cram.tar.gz"
+
+# Compile to DNAnexus applet
+java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
 ```
 
-For the test data, skip and move to compiling.
+##### NOTE:
 For your own data, do the following:
 ```
 # Edit docker line with full path:
@@ -194,15 +240,11 @@ sampleIDs=$(echo $samplePaths | perl -MFile::Basename -ne '@p = split(/,/, $_); 
 
 #add the base name based on your data
 file_prefix="${file_prefix%.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted}"
+
+#then compile
 ```                
 
-### 3. Compile to applet
-
-```bash
-java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
-```
-
-### 4. Run HLA-LA (single sample)
+#### 2. Run HLA-LA (Single Sample Example)
 
 ```bash
 dx run --priority high   --cost-limit 3 /hla_la   -ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa"   -iapplyT1K="false"   -iapplyPING="false"   -imapped_read="Genetics-Workshop-Mexico-2025:/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram"   -imapped_read_index="Genetics-Workshop-Mexico-2025:/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram.crai"   --folder="Genetics-Workshop-Mexico-2025:/Outputs"
