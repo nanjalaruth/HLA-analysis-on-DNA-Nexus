@@ -1,6 +1,6 @@
 # HLA-LA on DNAnexus
 
-This hands-on guide walks participants through extracting HLA reads from CRAMs on **DNAnexus** and then typing HLA alleles with **HLA-LA**.
+This hands-on guide walks participants through extracting HLA reads from CRAMs or BAMs (output from mapping) on **DNAnexus** and then typing HLA alleles with **HLA-LA** tool.
 
 > **Audience:** Mexican researchers  
 > **You will:**  
@@ -223,7 +223,7 @@ dx run \
 
 ```bash
 # Confirm docker line in WDL points to:
-docker: "dx://Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/docker-hla-la-1.0.8-fast-cram.tar.gz"
+docker: "dx://Genetics-Workshop-Mexico-2025:/docker-hla-la-1.0.8-fast-cram.tar.gz"
 
 # Compile to DNAnexus applet
 java -jar dxCompiler-2.14.0.jar compile hla-la.wdl -f
