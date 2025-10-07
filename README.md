@@ -256,11 +256,11 @@ dx run --priority high   --cost-limit 3 /hla_la   -ireference="Genetics-Workshop
 
 * Extracted CRAMs and CRAIs
 * HLA typing results from HLA-LA per sample
-`example output on the DNA Nexus workshop page`
+`example output on the DNA Nexus workshop Outputs folder`
 
 ---
 ## Next steps
-Convert in to a HLA PED file using the script `combineHLA_LA.sh` on the home page.
+Convert in to a HLA PED file using the script `combineHLA_LA.sh` on this page.
 
 ## Useful Commands
 ```bash
