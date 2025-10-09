@@ -97,16 +97,14 @@ Please ensure you can see the following in your project:
 Data folder
 - Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram
 - Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram.crai
+- GRCh38_full_analysis_set_plus_decoy_hla.fa
+- HLA_and_KIR_and_Immuno.bed
 
 Main folder
 - docker-samtools-1.3.tar.gz
 - docker-hla-la-1.0.8-fast-cram.tar.gz
 - extractReads.wdl
 - hla-la.wdl
-
-Reference files
-- GRCh38_full_analysis_set_plus_decoy_hla.fa
-- HLA_and_KIR_and_Immuno.bed
 
 If any file is missing, notify the workshop facilitator before proceeding.
 
@@ -200,7 +198,7 @@ java -jar dxCompiler-2.14.0.jar compile extractReads.wdl -f
 **Single sample example:**
 
 ```bash
-dx run /extractReads -ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa" -itargetRegions="Genetics-Workshop-Mexico-2025:/HLA_and_KIR_and_Immuno.bed" -imapped_read="Genetics-Workshop-Mexico-2025:/Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram" --folder="Genetics-Workshop-Mexico-2025:/Outputs"
+dx run /extractReads -ireference="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/GRCh38_full_analysis_set_plus_decoy_hla.fa" -itargetRegions="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/HLA_and_KIR_and_Immuno.bed" -imapped_read="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram" --folder="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Outputs"
 ```
 
 **Multiple samples (loop):**
@@ -209,12 +207,12 @@ dx run /extractReads -ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_ana
 #Full command for multiple samples
 dx run \
 --priority low /extractReads \
--ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa" \
--itargetRegions="Genetics-Workshop-Mexico-2025:/HLA_and_KIR_and_Immuno.bed" \ # downloaded from Alex Github page
--imapped_read="Genetics-Workshop-Mexico-2025:/Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram" \
+-ireference="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/GRCh38_full_analysis_set_plus_decoy_hla.fa" \
+-itargetRegions="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/HLA_and_KIR_and_Immuno.bed" \ # downloaded from Alex Github page
+-imapped_read="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage.cram" \
 #-imapped_read="/Bulk/Whole genome sequences/Whole genome CRAM files/10/1033931_23193_0_0.cram" \
 #-imapped_read="/Bulk/Whole genome sequences/Whole genome CRAM files/10/1073611_23193_0_0.cram" \
---folder="Genetics-Workshop-Mexico-2025:/Outputs"
+--folder="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Outputs"
 ```
 ---
 
@@ -248,7 +246,7 @@ file_prefix="${file_prefix%.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extrac
 #### 2. Run HLA-LA (Single Sample Example)
 
 ```bash
-dx run --priority high   --cost-limit 3 /hla_la   -ireference="Genetics-Workshop-Mexico-2025:/GRCh38_full_analysis_set_plus_decoy_hla.fa"   -iapplyT1K="false"   -iapplyPING="false"   -imapped_read="Genetics-Workshop-Mexico-2025:/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram"   -imapped_read_index="Genetics-Workshop-Mexico-2025:/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram.crai"   --folder="Genetics-Workshop-Mexico-2025:/Outputs"
+dx run --priority high   --cost-limit 3 /hla_la   -ireference="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Data/GRCh38_full_analysis_set_plus_decoy_hla.fa"   -iapplyT1K="false"   -iapplyPING="false"   -imapped_read="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram"   -imapped_read_index="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Outputs/NA19648.alt_bwamem_GRCh38DH.20150718.MXL.low_coverage_extracted.cram.crai"   --folder="Genetics-Workshop-Mexico-2025:/7_HLA_analysis_on_DNA_Nexus/Outputs"
 ```
 
 ---
